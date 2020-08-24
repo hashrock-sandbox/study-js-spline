@@ -35,21 +35,35 @@ function drawSpline() {
     }
     const spline = new BSpline(pts, degree, true);
     ctx.beginPath();
-    let oldx, oldy, x, y;
+    let oldx, oldy, oldp, x, y, p, oldd;
     oldx = spline.calcAt(0)[0];
     oldy = spline.calcAt(0)[1];
+    oldp = spline.calcAt(0)[2];
+    oldd = 0;
+
     for (let t = 0; t <= 1; t += 0.001) {
         ctx.moveTo(oldx, oldy);
         const interpol = spline.calcAt(t);
         x = interpol[0];
         y = interpol[1];
-        ctx.lineTo(x, y);
-        ctx.arc(x, y, interpol[2] * 10 , 0, Math.PI * 2, false);
+        p = interpol[2] * 20;
+        // ctx.lineTo(x, y);
+
+        const deg = Math.atan2(y - oldy, x - oldx)
+        const normal = 3.14 / 2
+        ctx.lineTo(oldx + Math.cos(oldd + normal) * oldp, oldy + Math.sin(oldd + normal) * oldp)
+        ctx.lineTo(x + Math.cos(deg + normal) * p, y + Math.sin(deg + normal) * p)
+        ctx.lineTo(x + Math.cos(deg - normal) * p, y + Math.sin(deg - normal) * p)
+        ctx.lineTo(oldx + Math.cos(oldd - normal) * oldp, oldy + Math.sin(oldd - normal) * oldp)
+        ctx.closePath();
+
+        // ctx.arc(x, y, interpol[2] * 10 , 0, Math.PI * 2, false);
         oldx = x;
         oldy = y;
+        oldd = deg;
+        oldp = p;
     }
     ctx.stroke();
-    ctx.closePath();
 }
 
 function putpoint(e) {

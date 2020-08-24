@@ -6,16 +6,16 @@ let pressed = false
 window.addEventListener("load", () => {
     canv = document.getElementById("canvas1");
     ctx = canv.getContext("2d");
-    canv.addEventListener("mousemove", (ev) => {
+    canv.addEventListener("pointermove", (ev) => {
         if (pressed) {
             putpoint(ev)
         }
     }
         , false);
-    canv.addEventListener("mousedown", (ev) => {
+    canv.addEventListener("pointerdown", (ev) => {
         pressed = true
     }, false);
-    canv.addEventListener("mouseup", (ev) => {
+    canv.addEventListener("pointerup", (ev) => {
         pressed = false
     }, false)
     redraw();
@@ -49,6 +49,11 @@ function drawSpline() {
         p = interpol[2] * 20;
         // ctx.lineTo(x, y);
 
+        // 点の間引き…実装してみたが、なにか線の描き味が悪化する気がする
+        // if(Math.pow( x-oldx, 2 ) + Math.pow( y-oldy, 2 ) < 4){
+        //     continue
+        // }
+
         const deg = Math.atan2(y - oldy, x - oldx)
         const normal = 3.14 / 2
         ctx.lineTo(oldx + Math.cos(oldd + normal) * oldp, oldy + Math.sin(oldd + normal) * oldp)
@@ -64,13 +69,14 @@ function drawSpline() {
         oldp = p;
     }
     ctx.stroke();
+    // ctx.fill()
 }
 
 function putpoint(e) {
     const rect = e.target.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    pts.push([x, y, 0.5]);
+    pts.push([x, y, e.pressure]);
     drawSpline();
 }
 

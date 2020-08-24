@@ -4,10 +4,14 @@
         <title>test</title>
         <script type="text/javascript" src="BSpline_es6.js"></script>
         <script type="text/javascript" src="main.js"></script>
+        <style>
+            canvas{
+                touch-action: none;
+            }
+        </style>
     </head>
     <body>
         <h1>BSpline Curve Playground</h1>
-        Click the canvas below to add points.
         <form name="fm">
             BSpline degree:
             <select name="degree" onchange="redraw();">
@@ -21,5 +25,21 @@
         </form>
         <canvas id="canvas1" width="700" height="400" style="border: solid 5px;"></canvas><br>
         source is available at <a href="https://github.com/Tagussan/BSpline">https://github.com/Tagussan/BSpline</a>
+
+        <h4>hashrock変更点</h4>
+        <ul>
+            <li>ポリゴンで描画するようにした</li>
+            <li>筆圧対応（BSplineが3次元に対応していたため、zとして入れたらそのまま動いたが、これでいいのだろうか…？）</li>
+        </ul>
+
+        <h4>所感</h4>
+        <ul>
+            <li>平筆になってるので両端を円にする必要がありそう。また、コーナーの形状が非常によくない</li>
+            <li>ゆっくり線を引くとガビガビになる</li>
+            <li>今の所線は１本しか引けない。描いたらラスタライズする必要がある</li>
+            <li>ストローク同士でブーリアン演算すれば、ストロークを部分的に消してflattenする消しゴムが実装できそうだけどしんどそう</li>
+        </ul>
+
+
     </body>
 </html>

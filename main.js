@@ -1,10 +1,23 @@
 let canv, ctx;
 let degree;
 let pts = [[10, 10], [100, 100], [50, 80], [200, 150], [100, 200], [300, 100], [500, 150]];
+let pressed = false
+
 window.addEventListener("load", () => {
     canv = document.getElementById("canvas1");
     ctx = canv.getContext("2d");
-    canv.addEventListener("mousemove", putpoint, false);
+    canv.addEventListener("mousemove", (ev) => {
+        if (pressed) {
+            putpoint(ev)
+        }
+    }
+        , false);
+    canv.addEventListener("mousedown", (ev) => {
+        pressed = true
+    }, false);
+    canv.addEventListener("mouseup", (ev) => {
+        pressed = false
+    }, false)
     redraw();
 }, true);
 

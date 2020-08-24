@@ -1,6 +1,6 @@
 let canv, ctx;
 let degree;
-let pts = [[10, 10], [100, 100], [50, 80], [200, 150], [100, 200], [300, 100], [500, 150]];
+let pts = [[10, 10, 0.1], [100, 100, 0.4], [50, 80, 1], [200, 150, 1], [100, 200, 0.8], [300, 100, 1], [500, 150, 0]];
 let pressed = false
 
 window.addEventListener("load", () => {
@@ -44,6 +44,7 @@ function drawSpline() {
         x = interpol[0];
         y = interpol[1];
         ctx.lineTo(x, y);
+        ctx.arc(x, y, interpol[2] * 10 , 0, Math.PI * 2, false);
         oldx = x;
         oldy = y;
     }
@@ -55,7 +56,7 @@ function putpoint(e) {
     const rect = e.target.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    pts.push([x, y]);
+    pts.push([x, y, 0.5]);
     drawSpline();
 }
 

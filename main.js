@@ -2,6 +2,7 @@ let canv, ctx;
 let degree;
 let pts = [[10, 10, 0.1], [100, 100, 0.4], [50, 80, 1], [200, 150, 1], [100, 200, 0.8], [300, 100, 1], [500, 150, 0]];
 let pressed = false
+let objects = []
 
 window.addEventListener("load", () => {
     canv = document.getElementById("canvas1");
@@ -16,33 +17,25 @@ window.addEventListener("load", () => {
         pressed = true
     }, false);
     canv.addEventListener("pointerup", (ev) => {
+        objects.push(toShape(pts, degree))
+        pts = []
         pressed = false
     }, false)
     redraw();
 }, true);
 
-function drawSpline() {
-    ctx.clearRect(0, 0, canv.width, canv.height);
-    if (pts.length == 0) {
-        return;
-    }
-    for (let i = 0; i < pts.length; i++) {
-        ctx.fillStyle = "rgba(0,255,0,1)";
-        ctx.beginPath();
-        ctx.arc(pts[i][0], pts[i][1], 5, 0, Math.PI * 2, false);
-        ctx.fill();
-        ctx.closePath();
-    }
+function toShape(pts, degree){
     const spline = new BSpline(pts, degree, true);
-    ctx.beginPath();
     let oldx, oldy, oldp, x, y, p, oldd;
     oldx = spline.calcAt(0)[0];
     oldy = spline.calcAt(0)[1];
     oldp = spline.calcAt(0)[2];
     oldd = 0;
 
+    const result = []
+
     for (let t = 0; t <= 1; t += 0.001) {
-        ctx.moveTo(oldx, oldy);
+        // ctx.moveTo(oldx, oldy);
         const interpol = spline.calcAt(t);
         x = interpol[0];
         y = interpol[1];
@@ -56,11 +49,20 @@ function drawSpline() {
 
         const deg = Math.atan2(y - oldy, x - oldx)
         const normal = 3.14 / 2
-        ctx.lineTo(oldx + Math.cos(oldd + normal) * oldp, oldy + Math.sin(oldd + normal) * oldp)
-        ctx.lineTo(x + Math.cos(deg + normal) * p, y + Math.sin(deg + normal) * p)
-        ctx.lineTo(x + Math.cos(deg - normal) * p, y + Math.sin(deg - normal) * p)
-        ctx.lineTo(oldx + Math.cos(oldd - normal) * oldp, oldy + Math.sin(oldd - normal) * oldp)
-        ctx.closePath();
+        // ctx.lineTo(oldx + Math.cos(oldd + normal) * oldp, oldy + Math.sin(oldd + normal) * oldp)
+        // ctx.lineTo(x + Math.cos(deg + normal) * p, y + Math.sin(deg + normal) * p)
+        // ctx.lineTo(x + Math.cos(deg - normal) * p, y + Math.sin(deg - normal) * p)
+        // ctx.lineTo(oldx + Math.cos(oldd - normal) * oldp, oldy + Math.sin(oldd - normal) * oldp)
+        // ctx.closePath();
+
+        result.push([
+          [oldx + Math.cos(oldd + normal) * oldp,
+          oldy + Math.sin(oldd + normal) * oldp],
+          [x + Math.cos(deg + normal) * p, y + Math.sin(deg + normal) * p],
+          [x + Math.cos(deg - normal) * p, y + Math.sin(deg - normal) * p],
+          [oldx + Math.cos(oldd - normal) * oldp,
+          oldy + Math.sin(oldd - normal) * oldp],
+        ]);
 
         // ctx.arc(x, y, interpol[2] * 10 , 0, Math.PI * 2, false);
         oldx = x;
@@ -68,8 +70,56 @@ function drawSpline() {
         oldd = deg;
         oldp = p;
     }
+
+    return result;
+}
+
+function clear(){
+    ctx.clearRect(0, 0, canv.width, canv.height);
+}
+
+function drawSpline() {
+    if (pts.length == 0) {
+        return;
+    }
+    for (let i = 0; i < pts.length; i++) {
+        ctx.fillStyle = "rgba(0,255,0,1)";
+        ctx.beginPath();
+        ctx.arc(pts[i][0], pts[i][1], 5, 0, Math.PI * 2, false);
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    const drawing = toShape(pts, degree)
+
+    ctx.beginPath();
+    for(s of drawing){
+        ctx.moveTo(s[0][0], s[0][1])
+        for(v of s){
+            ctx.lineTo(v[0], v[1]);
+        }
+        // ctx.closePath()
+    }
+
     ctx.stroke();
     // ctx.fill()
+}
+
+function drawObjects(){
+    for(obj of objects){
+        ctx.strokeStyle = "green"
+        ctx.beginPath();
+        for(s of obj){
+            ctx.moveTo(s[0][0], s[0][1])
+            for(v of s){
+                ctx.lineTo(v[0], v[1]);
+            }
+            // ctx.closePath()
+        }
+    
+        ctx.stroke();
+        ctx.strokeStyle = "black"
+    }
 }
 
 function putpoint(e) {
@@ -77,16 +127,22 @@ function putpoint(e) {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     pts.push([x, y, e.pressure]);
+    clear();
+    drawObjects();
     drawSpline();
 }
 
 function redraw() {
     const degMenu = document.fm.degree;
     degree = Number(degMenu.options[degMenu.selectedIndex].value);
+    clear();
+    drawObjects();
     drawSpline();
 }
 
 function ptsClear() {
     pts = [];
+    clear();
+    drawObjects();
     drawSpline();
 }

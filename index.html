@@ -4,6 +4,7 @@
         <title>test</title>
         <script type="text/javascript" src="BSpline_es6.js"></script>
         <script type="text/javascript" src="main.js"></script>
+        <script src="polybool.js"></script>
         <style>
             canvas{
                 touch-action: none;
@@ -22,6 +23,9 @@
             </select>
             &nbsp;
             <input type="button" onClick="ptsClear();" value="Clear All Points">
+            <label>
+                <input type="checkbox" id="eraser"> Eraser
+            </label>
         </form>
         <canvas id="canvas1" width="700" height="400" style="border: solid 5px;"></canvas><br>
         source is available at <a href="https://github.com/Tagussan/BSpline">https://github.com/Tagussan/BSpline</a>

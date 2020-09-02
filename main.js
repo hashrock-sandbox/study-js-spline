@@ -49,50 +49,23 @@ function toShape(pts, degree){
 
         rightPoints.push([x + Math.cos(deg + normal) * p, y + Math.sin(deg + normal) * p])
         leftPoints.push([x + Math.cos(deg - normal) * p, y + Math.sin(deg - normal) * p])
-        // ctx.lineTo(oldx + Math.cos(oldd + normal) * oldp, oldy + Math.sin(oldd + normal) * oldp)
-        // ctx.lineTo(x + Math.cos(deg + normal) * p, y + Math.sin(deg + normal) * p)
-        // ctx.lineTo(x + Math.cos(deg - normal) * p, y + Math.sin(deg - normal) * p)
-        // ctx.lineTo(oldx + Math.cos(oldd - normal) * oldp, oldy + Math.sin(oldd - normal) * oldp)
-        // ctx.closePath();
-
-        // ctx.arc(x, y, interpol[2] * 10 , 0, Math.PI * 2, false);
         oldx = x;
         oldy = y;
         oldd = deg;
         oldp = p;
     }
 
-    // for(let i = leftPoints.length - 1; i >= 0; i--){
-    //     console.log(i)
-
-    //     ctx.fillStyle = "rgba(0,255,0,1)";
-    //     ctx.beginPath();
-    //     ctx.arc(leftPoints[i][0], leftPoints[i][1], 5, 0, Math.PI * 2, false);
-    //     ctx.fill();
-    //     ctx.closePath();
-    // }
-    // for(let i = 0; i < rightPoints.length; i++){
-    //     ctx.fillStyle = "rgba(0,255,0,1)";
-    //     ctx.beginPath();
-    //     ctx.arc(rightPoints[i][0], rightPoints[i][1], 5, 0, Math.PI * 2, false);
-    //     ctx.fill();
-    //     ctx.closePath();
-    // }
-
     const result = []
 
     for(let i = leftPoints.length - 1; i >= 0; i--){
         result.push([leftPoints[i][0] , leftPoints[i][1]])
-        // ctx.lineTo(leftPoints[i][0] , leftPoints[i][1])
     }
     for(let i = 0; i < rightPoints.length; i++){
         result.push([rightPoints[i][0] , rightPoints[i][1]])
-        // ctx.lineTo(rightPoints[i][0] , rightPoints[i][1])
     }
 
     //なんか先が割れちゃうけどなぜ？
     // ctx.arc(x, y, p , oldd + Math.PI / 2, oldd - Math.PI / 2, true);
-
     return result;
 }
 
@@ -112,7 +85,6 @@ function drawSpline() {
     const shape = toShape(pts, degree)
 
     ctx.beginPath();
-    // ctx.moveTo(oldx, oldy);
     ctx.moveTo(shape[0][0], shape[0][1])
     for(let p of shape){
         ctx.lineTo(p[0], p[1])

@@ -21,18 +21,7 @@ window.addEventListener("load", () => {
     redraw();
 }, true);
 
-function drawSpline() {
-    ctx.clearRect(0, 0, canv.width, canv.height);
-    if (pts.length == 0) {
-        return;
-    }
-    for (let i = 0; i < pts.length; i++) {
-        ctx.fillStyle = "rgba(0,255,0,1)";
-        ctx.beginPath();
-        ctx.arc(pts[i][0], pts[i][1], 5, 0, Math.PI * 2, false);
-        ctx.fill();
-        ctx.closePath();
-    }
+function toShape(pts, degree){
     const spline = new BSpline(pts, degree, true);
     let oldx, oldy, oldp, x, y, p, oldd;
     oldx = spline.calcAt(0)[0];
@@ -72,8 +61,6 @@ function drawSpline() {
         oldd = deg;
         oldp = p;
     }
-    ctx.beginPath();
-    ctx.moveTo(oldx, oldy);
 
     // for(let i = leftPoints.length - 1; i >= 0; i--){
     //     console.log(i)
@@ -92,15 +79,45 @@ function drawSpline() {
     //     ctx.closePath();
     // }
 
+    const result = []
+
     for(let i = leftPoints.length - 1; i >= 0; i--){
-        ctx.lineTo(leftPoints[i][0] , leftPoints[i][1])
+        result.push([leftPoints[i][0] , leftPoints[i][1]])
+        // ctx.lineTo(leftPoints[i][0] , leftPoints[i][1])
     }
     for(let i = 0; i < rightPoints.length; i++){
-        ctx.lineTo(rightPoints[i][0] , rightPoints[i][1])
+        result.push([rightPoints[i][0] , rightPoints[i][1]])
+        // ctx.lineTo(rightPoints[i][0] , rightPoints[i][1])
     }
 
     //なんか先が割れちゃうけどなぜ？
-    ctx.arc(x, y, p , oldd + Math.PI / 2, oldd - Math.PI / 2, true);
+    // ctx.arc(x, y, p , oldd + Math.PI / 2, oldd - Math.PI / 2, true);
+
+    return result;
+}
+
+function drawSpline() {
+    ctx.clearRect(0, 0, canv.width, canv.height);
+    if (pts.length == 0) {
+        return;
+    }
+    for (let i = 0; i < pts.length; i++) {
+        ctx.fillStyle = "rgba(0,255,0,1)";
+        ctx.beginPath();
+        ctx.arc(pts[i][0], pts[i][1], 5, 0, Math.PI * 2, false);
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    const shape = toShape(pts, degree)
+
+    ctx.beginPath();
+    // ctx.moveTo(oldx, oldy);
+    ctx.moveTo(shape[0][0], shape[0][1])
+    for(let p of shape){
+        ctx.lineTo(p[0], p[1])
+    }
+
     ctx.closePath();
     ctx.stroke();
     ctx.fill()
